@@ -1,0 +1,14 @@
+{
+  application: {
+    port: 6000,
+    jwt: {
+      key: "5eb90nWgiGBaf6c024d207",
+      expireDate: "20w",
+      salt: 12,
+    },
+  },
+  database: {
+    mongo_url: "mongodb+srv://Codelitt123:Codelitt123@cluster0.yzd0v.mongodb.net/codelitt",
+    mongo_test_url: "",
+  },
+}
