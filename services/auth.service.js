@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const User = require('../models/user.model');
+const { appLogger } = require('../utils/logger');
 
 class AuthService {
 
@@ -19,6 +20,7 @@ class AuthService {
         const hashedPassword = await bcrypt.hash(body.password, config.get('application.jwt.salt'));
         body.password = hashedPassword;
         body.verified = true
+
         const result = await User.create(body);
         if (!result) return reject({ code: 500, msg: 'Error occurred, user was not created.' })
         delete result.password;

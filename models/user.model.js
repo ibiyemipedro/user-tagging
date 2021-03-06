@@ -30,7 +30,7 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
-  tag: {
+  tags: {
     type: [ObjectId],
     default: null,
     index: true,
