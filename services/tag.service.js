@@ -5,8 +5,8 @@ class TagService {
 
   /**
    * Create a tag
-   * @param tag - Object
-   * @returns User - Object
+  * @param {Object} tag
+  * @returns {Object} createdTag
   */
   createTag(tag) {
     return new Promise(async (resolve, reject) => {
@@ -28,29 +28,29 @@ class TagService {
 
 
   /**
- * Get a user
- * @param user - Object
- * @returns User - Object
-*/
+  * Edit tag
+  * @param {String} tagId 
+  * @param {Object} tagUpdate
+  * @returns {Object} deletedTag
+  */
   editTag(tagId, tagUpdate) {
     return new Promise(async (resolve, reject) => {
       try {
         let validTag = await Tag.findById(tagId);
-
-
+        if (!validTag) return reject({ code: 404, msg: 'Tags not found' })
+        const updatedTag = validTag.update(tagUpdate)
+        resolve(updatedTag);
 
       } catch (error) {
-        error.source = 'Get Profile Service'
+        error.source = 'Edit tag Service'
         return reject(error);
       }
     })
   }
 
   /**
-   * Edit a user
-   * @param body - Object
-   * @param user - Object
-   * @returns updatedUser - Object
+   * Get all tags
+   * @returns  {Object} allTags
   */
   getTags() {
     return new Promise(async (resolve, reject) => {
@@ -58,10 +58,11 @@ class TagService {
         const tags = await Tag.findAll();
 
         if (tags.length < 1) return reject({ code: 404, msg: 'Tags not found' })
+
         resolve(tags);
 
       } catch (error) {
-        error.source = 'Get all tags'
+        error.source = 'Get all tags service'
         return reject(error);
       }
     })
@@ -70,34 +71,23 @@ class TagService {
 
 
   /**
-   * Edit a user
-   * @param body - Object
-   * @param user - Object
-   * @returns updatedUser - Object
+  * Delete tag
+  * @param {String} tagId 
+  * @returns {Object} deletedTag
   */
-  deleteTag(body, user) {
+  deleteTag(tagId) {
     return new Promise(async (resolve, reject) => {
       try {
-        const activeUser = await User.findOne({
-          where: {
-            email: user.email
-          },
-          raw: true,
-        });
-        const isEqual = await bcrypt.compare(body.oldPassword, activeUser.password);
-        if (!isEqual) return reject({ code: 400, msg: 'Old password incorrect' })
 
-        const hashedPassword = await bcrypt.hash(body.newPassword, config.get('application.jwt.salt'));
+        const activeTag = await Tag.findById(tagId);
+        if (!activeTag) return reject({ code: 404, msg: 'Tags not found or already deleted' })
 
-        const updatedUser = await User.update({ password: hashedPassword }, {
-          where: {
-            email: user.email
-          }
-        });
-        resolve(updatedUser);
+        const deletedTag = await activeTag.delete();
+
+        resolve(deletedTag);
 
       } catch (error) {
-        error.source = 'Change password service'
+        error.source = 'Delete tag service'
         return reject(error);
 
       }
