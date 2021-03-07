@@ -13,21 +13,34 @@ const cors = (req, res, next) => {
   next();
 };
 
-const schema = require('./schema/index')
+const schema = require('./schema/index');
+const { GraphQLAuth } = require('./middlewares/auth');
 const root = { hello: () => 'Hello world!' };
 
 const app = express();
 
 app.use(cors);
 
-// app.use(loggerMiddleware);
+app.use(GraphQLAuth);
 
 // graphlql endpoint
-app.use('/graphql', graphqlHTTP({
+app.use('/graphql', graphqlHTTP((req, res) => ({
   schema,
   rootValue: root,
   graphiql: true,
-}));
+  context: {
+    user: req.user,
+    authErrorMsg: req.authErrorMsg
+  },
+  //   formatError: error => ({
+  //     message: error.message,
+  //     locations: error.locations,
+  //     stack: error.stack,
+  //     path: error.path
+  // })
+})
+
+));
 
 
 // Default landing endpoint

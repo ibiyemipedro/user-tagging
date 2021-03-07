@@ -1,6 +1,6 @@
 const config = require('config');
 const bcrypt = require('bcrypt');
-const { User } = require('../models');
+const User = require('../models/user.model');
 
 class UserService {
 
@@ -11,9 +11,38 @@ class UserService {
   * @param {String} populate - fields to populate
   * @returns {String} registeredUser
   */
+  getUserById(userId) {
+    return new Promise(async (resolve, reject) => {
+      try {
+
+        const registeredUser = await User.findById(userId);
+
+        if (!registeredUser || registeredUser.deleted) return reject({ code: 400, msg: 'User not found' })
+        if (!registeredUser.verified) return reject({ code: 400, msg: 'User not verified' })
+        delete registeredUser.password
+
+        resolve(registeredUser);
+
+      } catch (error) {
+        error.source = 'Get user service'
+        return reject(error);
+      }
+    })
+  }
+
+
+
+  /**
+* Get a user
+* @param {Object} filter - filter criteria object
+* @param {Object} option - options to display
+* @param {String} populate - fields to populate
+* @returns {String} registeredUser
+*/
   getUser(filter = {}, option = {}, populate = "") {
     return new Promise(async (resolve, reject) => {
       try {
+
         const registeredUser = await User.findOne(filter)
           .select(option)
           .populate(populate);
@@ -30,6 +59,7 @@ class UserService {
       }
     })
   }
+
 
   /**
   * Edit a user

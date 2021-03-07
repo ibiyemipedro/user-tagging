@@ -1,7 +1,7 @@
 const graphql = require('graphql');
-const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLList } = graphql
+const { GraphQLObjectType, GraphQLString, GraphQLBoolean, GraphQLList } = graphql
 
-exports.UserType = new GraphQLObjectType({
+const UserType = new GraphQLObjectType({
   name: 'Users',
   fields: () => ({
     firstName: { type: GraphQLString },
@@ -10,5 +10,17 @@ exports.UserType = new GraphQLObjectType({
     tag: { type: GraphQLString },
     userType: { type: GraphQLString },
     password: { type: GraphQLString },
+    isAdmin: { type: GraphQLBoolean }
   })
 })
+
+
+exports.AuthUserType = new GraphQLObjectType({
+  name: 'AuthUser',
+  fields: () => ({
+    user: { type: UserType },
+    token: { type: GraphQLString }
+  })
+})
+
+exports.UserType = UserType;

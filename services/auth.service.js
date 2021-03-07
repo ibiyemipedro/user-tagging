@@ -4,6 +4,9 @@ const config = require('config');
 const User = require('../models/user.model');
 const { appLogger } = require('../utils/logger');
 
+const UserService = require("./user.service");
+const userInstance = new UserService();
+
 class AuthService {
 
   /**
@@ -45,7 +48,7 @@ class AuthService {
         if (existingUser) return reject({ code: 400, msg: 'Email already used.' })
 
 
-        if (body.userType.toUpper() === "CONTRACTOR") return reject({ code: 400, msg: 'A contractor cannot be an admin.' })
+        if (body.userType.toUpperCase() === "CONTRACTOR") return reject({ code: 400, msg: 'A contractor cannot be an admin.' })
 
         const hashedPassword = await bcrypt.hash(body.password, config.get('application.jwt.salt'));
         body.password = hashedPassword;
@@ -74,14 +77,19 @@ class AuthService {
         let user = await User.findOne({ email: body.email });
 
         if (!user || user.deleted) return reject({ code: 404, msg: 'User not found' })
-        if (!user.verified) return reject({ code: 400, msg: 'User not verified' })
+        if (!user.verified) return reject({ code: 400, msg: 'User(Admin) not verified' })
+
         const isEqual = await bcrypt.compare(body.password, user.password);
         if (!isEqual) return reject({ code: 400, msg: 'Password incorrect' })
+
         delete user.password
-        const token = jwt.sign(user, config.get('application.jwt.key'), {
+
+        const token = jwt.sign({ userId: user._id, email: user.email, isAdmin: user.isAdmin }, config.get('application.jwt.key'), {
           expiresIn: '3d'
         });
+
         if (!token) return reject({ code: 400, msg: 'Could not sign user' })
+
         resolve({ user, token });
 
       } catch (error) {
@@ -110,11 +118,13 @@ class AuthService {
         if (user.verified) return reject({ code: 400, msg: 'Account already verified' })
 
         // For demo purposes verification code is CODELITT, usually this should be a One Time Password to phone number or email
-        if (body.verificationCode !== "CODELITT") return reject({ code: 400, msg: 'Could not verify admin' })
+        if (body.verificationCode !== "CODELITT") return reject({ code: 400, msg: ' Code incorrect, Could not verify admin' })
 
-        const updatedAdmin = await user.updateOne({
+        await user.updateOne({
           verified: true
         })
+
+        const updatedAdmin = await userInstance.getUser({ email: body.email })
 
         resolve(updatedAdmin);
 

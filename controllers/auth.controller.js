@@ -1,14 +1,14 @@
-const { validateUser, validateLogin, validateVerify } = require("../validations/user.validation");
+const { validateUser, validateLogin, validateVerify, validateAdminVerification } = require("../validations/user.validation");
 const AuthService = require("../services/auth.service");
 const authInstance = new AuthService();
 
 
 /**
- * Create user
+ * Sign Up User
  * @param {Object} userObject
  * @returns {Object} response
  */
-exports.createUser = async (userObject) => {
+exports.signUp = async (userObject) => {
   try {
 
     const { error } = validateUser(userObject);
@@ -16,6 +16,65 @@ exports.createUser = async (userObject) => {
 
     const createdUser = await authInstance.signUp(userObject)
     return createdUser;
+
+  } catch (error) {
+    throw new Error(error.msg || error.message);
+  }
+}
+
+/**
+ * Sign Up Admin
+ * @param {Object} adminObject
+ * @returns {Object} response
+ */
+exports.adminSignUp = async (adminObject) => {
+  try {
+
+    const { error } = validateUser(adminObject);
+    if (error) throw new Error(error.details[0].message);
+
+    const createdAdmin = await authInstance.adminSignUp(adminObject)
+    return createdAdmin;
+
+  } catch (error) {
+    throw new Error(error.msg || error.message);
+  }
+}
+
+/**
+ * Sign In
+ * @param {Object} userObject
+ * @returns {Object} response
+ */
+exports.signIn = async (userObject) => {
+  try {
+
+    const { error } = validateLogin(userObject);
+    if (error) throw new Error(error.details[0].message);
+
+    const { user, token } = await authInstance.signIn(userObject)
+
+    return { user, token };
+
+  } catch (error) {
+    throw new Error(error.msg || error.message);
+  }
+}
+
+/**
+ * Verify Admin Account
+ * @param {Object} verificationObject
+ * @returns {Object} response
+ */
+exports.verifyAdmin = async (verificationObject) => {
+  try {
+
+    const { error } = validateAdminVerification(verificationObject);
+    if (error) throw new Error(error.details[0].message);
+
+    const updatedAdmin = await authInstance.verifyAdmin(verificationObject)
+
+    return updatedAdmin;
 
   } catch (error) {
     throw new Error(error.msg || error.message);

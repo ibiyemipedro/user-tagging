@@ -34,11 +34,14 @@ class TagService {
   * @returns {Object} deletedTag
   */
   editTag(tagId, tagUpdate) {
+
     return new Promise(async (resolve, reject) => {
       try {
         let validTag = await Tag.findById(tagId);
         if (!validTag) return reject({ code: 404, msg: 'Tags not found' })
-        const updatedTag = validTag.update(tagUpdate)
+
+        await validTag.updateOne(tagUpdate)
+        const updatedTag = await this.getTags({ _id: tagId })
         resolve(updatedTag);
 
       } catch (error) {
@@ -52,10 +55,10 @@ class TagService {
    * Get all tags
    * @returns  {Object} allTags
   */
-  getTags() {
+  getTags(filter = {}) {
     return new Promise(async (resolve, reject) => {
       try {
-        const tags = await Tag.findAll();
+        const tags = await Tag.find(filter);
 
         if (tags.length < 1) return reject({ code: 404, msg: 'Tags not found' })
 

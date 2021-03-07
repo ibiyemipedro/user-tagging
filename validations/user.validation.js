@@ -30,6 +30,15 @@ function validateEditProfile(user) {
   return Schema.validate(user);
 }
 
+function validateAdminVerification(verificationObject) {
+  const Schema = Joi.object().keys({
+    email: Joi.string().email().max(50).required(),
+    verificationCode: Joi.string().min(4).max(15).required(),
+  });
+
+  return Schema.validate(verificationObject);
+}
+
 function validatePasswordUpdated(user) {
   const Schema = Joi.object().keys({
     oldPassword: Joi.string().min(7).required(),
@@ -52,6 +61,9 @@ function validateVerify(user) {
 module.exports = {
   validateUser,
   validateLogin,
+  validateAdminVerification,
+
+
   validateEditProfile,
   validatePasswordUpdated,
   validateVerify
