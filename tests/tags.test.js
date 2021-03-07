@@ -20,6 +20,10 @@ beforeAll(async () => {
   });
 });
 
+afterEach(async () => {
+  await mongoose.connection.db.dropDatabase();
+});
+
 afterAll(async () => {
   await mongoose.connection.db.dropDatabase();
   await mongoose.disconnect();
@@ -27,9 +31,9 @@ afterAll(async () => {
 });
 
 describe('User Auth Test', () => {
-  it('Expects to create user', async (done) => {
+  it('Expects to create a tag and returns the tag object', async (done) => {
     const createdTag = await tagInstance.createTag({ name: "JX", details: "JX Details" })
-    expect(createdTag).toBeDefined();
+    expect(createdTag).toBeObject();
     done()
   });
 });

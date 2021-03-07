@@ -6,24 +6,17 @@ const MSG_TYPES = Object.freeze({
   CREATED: "Resource Created Successfully",
   FETCHED: "Resource Fetched Successfully",
   ACCOUNT_VERIFIED: "Account Successfully Verified",
-  ORDER_POSTED: "Order Successfully Posted",
-  AWAIT_ADMIN:
-    "Account successfully verified. Awaiting administrator verification.",
   ACCOUNT_EXIST: "Account already exist.",
+  EMAIL_USED: "E-mail has been user.",
   ACCOUNT_INVALID: "Invalid email or password",
-  SUSPENDED: "Account is suspended!",
-  INACTIVE: "Account is inactive!",
-  DISABLED: "Account is disabled!",
-  NOT_FOUND: "Not Found",
-  UPLOAD_IMAGE: "Image upload is required.",
+  NOT_FOUND: "Resource Not Found",
+  NOT_VERIFIED: "Account Not Verified",
   ACCESS_DENIED: "Access denied.",
-  SESSION_EXPIRED: "Access denied. Your session has expired",
   PERMISSION: "You don't have enough permission to perform this action",
   SERVER_ERROR: "Server Error!",
   ACCOUNT_DELETED: "Account no longer exists!",
   INVALID_PASSWORD: "Invalid Password",
-  WALLET_FUNDED: "Your wallet has been funded",
-  NOT_ALLOWED: "This operation is allowed",
+  EXPIRED_TOKEN: "Token has expired, login agin",
 });
 
 const ACCOUNT_TYPES = Object.freeze({
@@ -31,14 +24,7 @@ const ACCOUNT_TYPES = Object.freeze({
   USER: "user",
 });
 
-const STATUS_TYPES = Object.freeze({
-  COMPLETED: "COMPLETED",
-  PENDING: "PENDING",
-  FAILED: "FAILED",
-});
-
 module.exports = {
   MSG_TYPES,
-  ACCOUNT_TYPES,
-  STATUS_TYPES
+  ACCOUNT_TYPES
 };

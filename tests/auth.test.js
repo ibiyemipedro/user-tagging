@@ -20,6 +20,10 @@ beforeAll(async () => {
   });
 });
 
+afterEach(async () => {
+  await mongoose.connection.db.dropDatabase();
+});
+
 afterAll(async () => {
   await mongoose.connection.db.dropDatabase();
   await mongoose.disconnect();
@@ -28,11 +32,43 @@ afterAll(async () => {
 
 
 
+
+
 describe('SignUp Service', () => {
 
   it('expects to create user and returns the created user object', async (done) => {
-    const createdUser = await authInstance.signIn({ firstName: "Demo", lastName: "User", email: "a@a.com", password: "1234567", userType: "contractor", duration: "5 months", role: "Product Manager" })
-    expect(createdTag).toBeDefined();
+    const createdUser = await authInstance.signUp({
+      firstName: "Demo",
+      lastName: "User",
+      email: "a@a.com",
+      password: "1234567",
+      userType: "contractor",
+      duration: "5 months",
+      role: "Product Manager"
+    })
+    expect(createdUser).toBeObject();
     done()
   });
+
+});
+
+
+describe('SignIn Service', () => {
+
+  it('expects to sign user in and returns the created user object, and token', async (done) => {
+    await authInstance.signUp({
+      firstName: "Demo",
+      lastName: "User",
+      email: "a@a.com",
+      password: "1234567",
+      userType: "contractor",
+      duration: "5 months",
+      role: "Product Manager"
+    })
+    const authUser = await authInstance.signIn({ email: "a@a.com", password: "1234567" })
+    expect(authUser.user).toBeObject();
+    expect(authUser.token).toBeString();
+    done()
+  });
+
 });

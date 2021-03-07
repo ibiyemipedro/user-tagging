@@ -3,6 +3,11 @@ const { MSG_TYPES } = require("../constants/msgTypes");
 const UserService = require("../services/user.service");
 const userInstance = new UserService();
 
+/**
+ * Get single user
+ * @param {String} userId
+ * @returns {Object} user
+ */
 exports.getUser = async (userId) => {
   try {
     const { error } = validateUserId(userId);
@@ -16,11 +21,14 @@ exports.getUser = async (userId) => {
   }
 }
 
+/**
+ * Get all users
+ * @returns {Object} users
+ */
 exports.getUsers = async () => {
   try {
-    const users = await userInstance.getUsers({ verified: true, deleted: false })
+    const users = await userInstance.getUsers({ verified: true, deleted: false }, {}, 'tags')
 
-    console.log('users', users)
     return users;
 
   } catch (error) {
@@ -28,9 +36,14 @@ exports.getUsers = async () => {
   }
 }
 
+/**
+ * Get users for a tag
+ * @param {String} userId
+ * @returns {Object} users
+ */
 exports.getTagUsers = async (tagId) => {
   try {
-    const users = await userInstance.getTagUsers(tagId)
+    const users = await userInstance.getUsers({ tags: tagId, verified: true, deleted: false })
     return users;
 
   } catch (error) {
@@ -38,6 +51,12 @@ exports.getTagUsers = async (tagId) => {
   }
 }
 
+/**
+ * Edit user infomation
+ * @param {Object} user
+ * @param {Object} editUserObject
+ * @returns {Object} updatedUser
+ */
 exports.editUser = async (user, editUserObject) => {
   try {
     const { error } = validateEditProfile(editUserObject);
@@ -51,6 +70,11 @@ exports.editUser = async (user, editUserObject) => {
   }
 }
 
+/**
+ * Soft delete user infomation
+ * @param {String} user
+ * @returns {Object} response
+ */
 exports.deleteUser = async (userId) => {
   try {
     const { error } = validateUserId(userId);

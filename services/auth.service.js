@@ -1,11 +1,12 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const config = require('config');
+const appConfig = require('../config/config.json');
+const { MSG_TYPES } = require('../constants/msgTypes');
 const User = require('../models/user.model');
-const { appLogger } = require('../utils/logger');
 
 const UserService = require("./user.service");
 const userInstance = new UserService();
+
 
 class AuthService {
 
@@ -18,9 +19,9 @@ class AuthService {
     return new Promise(async (resolve, reject) => {
       try {
         let existingUser = await User.findOne({ email: body.email });
-        if (existingUser) return reject({ code: 400, msg: 'Email already used.' })
+        if (existingUser) return reject({ code: 400, msg: MSG_TYPES.EMAIL_USED })
 
-        const hashedPassword = await bcrypt.hash(body.password, config.get('application.jwt.salt'));
+        const hashedPassword = await bcrypt.hash(body.password, appConfig.application.jwt.salt);
         body.password = hashedPassword;
         body.verified = true
 
@@ -45,12 +46,12 @@ class AuthService {
     return new Promise(async (resolve, reject) => {
       try {
         let existingUser = await User.findOne({ email: body.email });
-        if (existingUser) return reject({ code: 400, msg: 'Email already used.' })
+        if (existingUser) return reject({ code: 400, msg: MSG_TYPES.EMAIL_USED })
 
 
         if (body.userType.toUpperCase() === "CONTRACTOR") return reject({ code: 400, msg: 'A contractor cannot be an admin.' })
 
-        const hashedPassword = await bcrypt.hash(body.password, config.get('application.jwt.salt'));
+        const hashedPassword = await bcrypt.hash(body.password, appConfig.application.jwt.salt);
         body.password = hashedPassword;
         body.isAdmin = true
         const result = await User.create(body);
@@ -76,19 +77,19 @@ class AuthService {
       try {
         let user = await User.findOne({ email: body.email });
 
-        if (!user || user.deleted) return reject({ code: 404, msg: 'User not found' })
-        if (!user.verified) return reject({ code: 400, msg: 'User(Admin) not verified' })
+        if (!user || user.deleted) return reject({ code: 404, msg: MSG_TYPES.NOT_FOUND })
+        if (!user.verified) return reject({ code: 400, msg: MSG_TYPES.NOT_VERIFIED })
 
         const isEqual = await bcrypt.compare(body.password, user.password);
-        if (!isEqual) return reject({ code: 400, msg: 'Password incorrect' })
+        if (!isEqual) return reject({ code: 400, msg: MSG_TYPES.INVALID_PASSWORD })
 
         delete user.password
 
-        const token = jwt.sign({ userId: user._id, email: user.email, isAdmin: user.isAdmin }, config.get('application.jwt.key'), {
+        const token = jwt.sign({ userId: user._id, email: user.email, isAdmin: user.isAdmin }, appConfig.application.jwt.key, {
           expiresIn: '3d'
         });
 
-        if (!token) return reject({ code: 400, msg: 'Could not sign user' })
+        if (!token) return reject({ code: 400, msg: MSG_TYPES.SERVER_ERROR })
 
         resolve({ user, token });
 
@@ -113,7 +114,7 @@ class AuthService {
       try {
         let user = await User.findOne({ email: body.email });
 
-        if (!user || user.deleted) return reject({ code: 404, msg: 'Admin not found' })
+        if (!user || user.deleted) return reject({ code: 404, msg: MSG_TYPES.NOT_FOUND })
         if (!user.isAdmin) return reject({ code: 400, msg: 'Account not an admin' })
         if (user.verified) return reject({ code: 400, msg: 'Account already verified' })
 

@@ -6,7 +6,7 @@ const authInstance = new AuthService();
 /**
  * Sign Up User
  * @param {Object} userObject
- * @returns {Object} response
+ * @returns {Object} createdUser
  */
 exports.signUp = async (userObject) => {
   try {
@@ -25,7 +25,7 @@ exports.signUp = async (userObject) => {
 /**
  * Sign Up Admin
  * @param {Object} adminObject
- * @returns {Object} response
+ * @returns {Object} createdAdmin
  */
 exports.adminSignUp = async (adminObject) => {
   try {
@@ -44,7 +44,7 @@ exports.adminSignUp = async (adminObject) => {
 /**
  * Sign In
  * @param {Object} userObject
- * @returns {Object} response
+ * @returns {Object} { user, token } 
  */
 exports.signIn = async (userObject) => {
   try {
@@ -64,7 +64,7 @@ exports.signIn = async (userObject) => {
 /**
  * Verify Admin Account
  * @param {Object} verificationObject
- * @returns {Object} response
+ * @returns {Object} updatedAdmin
  */
 exports.verifyAdmin = async (verificationObject) => {
   try {

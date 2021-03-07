@@ -2,7 +2,6 @@ require('dotenv').config()
 const express = require('express');
 const { graphqlHTTP } = require('express-graphql');
 const { mongoConnection } = require('./config/dbConfig');
-const { loggerMiddleware } = require("./utils/logger")
 
 const PORT = process.env.PORT || 5000
 
@@ -45,6 +44,7 @@ app.use('/graphql', graphqlHTTP((req, res) => ({
 
 // Default landing endpoint
 app.use('/', (req, res, next) => res.status(200).json({ message: 'Welcome to CODE-LITTTT.' }));
+
 
 // connection to DB and running server
 (async () => {

@@ -20,48 +20,20 @@ beforeAll(async () => {
   });
 });
 
+afterEach(async () => {
+  await mongoose.connection.db.dropDatabase();
+});
+
 afterAll(async () => {
   await mongoose.connection.db.dropDatabase();
   await mongoose.disconnect();
   await mongoServer.stop();
 });
 
-describe('User Auth Test', () => {
+describe('Find Users', () => {
   it('Expects to create user', async (done) => {
-    const createdTag = await tagInstance.createTag({ name: "JX", details: "JX Details" })
-    expect(createdTag).toBeDefined();
+    const fetchedUser = await userInstance.getUsers()
+    expect(fetchedUser).toBeArray();
     done()
   });
 });
-
-
-
-
-
-// const { mongoTestConnection, mongoTestDisconnect } = require("../config/testConfig")
-// const Tag = require('../models/tag.models');
-
-
-// const AuthService = require("../services/auth.service");
-// const authInstance = new AuthService();
-
-// const TagService = require("../services/tag.service");
-// const tagInstance = new TagService();
-
-// beforeAll(async () => {
-//   await mongoTestConnection();
-// });
-
-// afterAll(async () => {
-//   await Tag.deleteMany({ __v: 0 })
-//   await mongoTestDisconnect()
-// });
-
-
-// describe('User Auth Test', () => {
-//   it('Expects to create user', async (done) => {
-//     const createdTag = await tagInstance.createTag({ name: "JX", details: "JX Details" })
-//     expect(createdTag).toBeDefined();
-//     done()
-//   });
-// });

@@ -7,7 +7,7 @@ const tagInstance = new TagService();
 /**
  * Create tag
  * @param {Object} tagObject
- * @returns {Object} response
+ * @returns {Object} createdTag
  */
 exports.createTag = async (tagObject) => {
   try {
@@ -16,6 +16,7 @@ exports.createTag = async (tagObject) => {
 
     const createdTag = await tagInstance.createTag(tagObject)
     return createdTag;
+
   } catch (error) {
     throw new Error(error.msg || error.message);
   }
@@ -25,7 +26,7 @@ exports.createTag = async (tagObject) => {
 /**
  * Get tag
  * @param {String} tagId
- * @returns {Object} response
+ * @returns {Object} tag
  */
 exports.getTag = async (tagId) => {
   try {
@@ -34,6 +35,7 @@ exports.getTag = async (tagId) => {
 
     const tag = await tagInstance.getTags({ _id: tagId.tagId })
     return tag[0];
+
   } catch (error) {
     throw new Error(error.msg || error.message);
   }
@@ -42,12 +44,14 @@ exports.getTag = async (tagId) => {
 
 /**
  * Get all tags
- * @returns {Object} response
+ * @returns {Object} tags
  */
 exports.getTags = async () => {
   try {
+
     const tags = await tagInstance.getTags()
     return tags;
+
   } catch (error) {
     throw new Error(error.msg || error.message);
   }
@@ -57,7 +61,7 @@ exports.getTags = async () => {
 /**
  * Edit tag
  * @param {Object} tagUpdateObject
- * @returns {Object} response
+ * @returns {Object} modifiedTag
  */
 exports.editTag = async (tagUpdateObject) => {
   try {
@@ -69,6 +73,7 @@ exports.editTag = async (tagUpdateObject) => {
 
     const modifiedTag = await tagInstance.editTag(tagId, tagUpdateObject)
     return modifiedTag;
+
   } catch (error) {
     throw new Error(error.msg || error.message);
   }

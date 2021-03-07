@@ -1,13 +1,11 @@
-const { logError } = require('./logger');
+const LoggerService = require("./logger")
 
-module.exports = (err, req, res, next) => {
+module.exports = (err) => {
 
-  logError("Error", err)
   const errorMessage = err.msg || err.message || "Something went wrong";
   const statusCode = err.code || err.statusCode || 500;
 
-  console.log("err ==> ", new Date().getUTCDate(), "<===>", err);
+  LoggerService.error(errorMessage, err)
 
-  winston.error(errorMessage, err);
-  return JsonResponse(res, statusCode, errorMessage);
+  return { statusCode, errorMessage };
 }

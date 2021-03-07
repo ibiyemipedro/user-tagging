@@ -1,3 +1,4 @@
+const { MSG_TYPES } = require('../constants/msgTypes');
 const User = require('../models/user.model');
 
 const TagService = require("../services/tag.service");
@@ -12,19 +13,17 @@ class UserService {
 * @param {String} populate - fields to populate
 * @returns {String} registeredUser
 */
-  getUsers(filter = {}, option = {}) {
+  getUsers(filter = {}, option = {}, populate = "") {
     return new Promise(async (resolve, reject) => {
       try {
 
-        const registeredUser = await User.find(filter)
-          // .select(option)
-          .populate("tags");
+        const registeredUsers = await User.find(filter)
+          .select(option)
+          .populate(populate);
 
-        if (!registeredUser || registeredUser.deleted) return reject({ code: 400, msg: 'User not found' })
-        if (registeredUser.verified === false) return reject({ code: 400, msg: 'User not verified' })
-        delete registeredUser.password
+        if (registeredUsers.length < 1) return reject({ code: 400, msg: MSG_TYPES.NOT_FOUND })
 
-        resolve(registeredUser);
+        resolve(registeredUsers);
 
       } catch (error) {
         error.source = 'Get user service'
@@ -32,28 +31,6 @@ class UserService {
       }
     })
   }
-
-
-  /**
-* Get tag users
-* @param {String} tagId - filter criteria object
-* @returns {String} registeredUser
-*/
-  getTagUsers(tagId) {
-    return new Promise(async (resolve, reject) => {
-      try {
-
-        const tagUsers = await User.find({ tags: tagId })
-
-        resolve(tagUsers);
-
-      } catch (error) {
-        error.source = 'Get user service'
-        return reject(error);
-      }
-    })
-  }
-
 
 
   /**
@@ -67,8 +44,8 @@ class UserService {
     return new Promise(async (resolve, reject) => {
       try {
 
-        let validUser = await User.findOne({ email: user.email });
-        if (!validUser || validUser.deleted) return reject({ code: 404, msg: 'User not found' })
+        let validUser = await User.findOne({ email: user.email, verified: true, deleted: false });
+        if (!validUser || validUser.deleted) return reject({ code: 404, msg: MSG_TYPES.NOT_FOUND })
 
         if (userEditObject.tags && userEditObject.tags.length > 0) {
           await Promise.all(userEditObject.tags.map(async (tag) => {
@@ -89,7 +66,7 @@ class UserService {
   }
 
   /**
-  * Delete a user
+  * Soft delete a user
   * @param {String} userId - user to be deleted
   * @returns {Object} updatedUser
   */

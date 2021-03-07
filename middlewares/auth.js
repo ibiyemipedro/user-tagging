@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
-const config = require('config');
-const UserService = require("../services/user.service");
+const appConfig = require('../config/config.json');
 const { MSG_TYPES } = require("../constants/msgTypes");
 
 
@@ -13,11 +12,11 @@ const GraphQLAuth = async (req, res, next) => {
     return next();
   }
   try {
-    const decoded = jwt.verify(token, config.get('application.jwt.key'));
+    const decoded = jwt.verify(token, appConfig.application.jwt.key,);
 
     if (!decoded) {
       req.user = null;
-      req.authErrorMsg = "INCORRECT TOKEN"
+      req.authErrorMsg = MSG_TYPES.PERMISSION
       return next();
     }
     req.user = decoded
@@ -26,7 +25,7 @@ const GraphQLAuth = async (req, res, next) => {
   } catch (ex) {
     if (ex.name === "TokenExpiredError") {
       req.user = null;
-      req.authErrorMsg = "TOKEN EXPIRED"
+      req.authErrorMsg = MSG_TYPES.EXPIRED_TOKEN
       return next();
     }
     req.user = null;
