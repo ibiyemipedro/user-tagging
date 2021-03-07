@@ -17,8 +17,8 @@ class UserService {
       try {
 
         const registeredUser = await User.find(filter)
-          .select(option)
-          .populate("Tags");
+          // .select(option)
+          .populate("tags");
 
         if (!registeredUser || registeredUser.deleted) return reject({ code: 400, msg: 'User not found' })
         if (registeredUser.verified === false) return reject({ code: 400, msg: 'User not verified' })

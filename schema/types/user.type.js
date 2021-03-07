@@ -1,5 +1,6 @@
 const graphql = require('graphql');
-const { GraphQLObjectType, GraphQLString, GraphQLBoolean, GraphQLList } = graphql
+const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLBoolean, GraphQLList } = graphql
+const { TagType } = require("./tag.type");
 
 const UserType = new GraphQLObjectType({
   name: 'Users',
@@ -7,12 +8,24 @@ const UserType = new GraphQLObjectType({
     firstName: { type: GraphQLString },
     lastName: { type: GraphQLString },
     email: { type: GraphQLString },
-    tags: { type: GraphQLList(GraphQLString) },
+    tags: { type: GraphQLList(TagType) },
     userType: { type: GraphQLString },
+    role: { type: GraphQLString },
+    duration: { type: GraphQLString },
     password: { type: GraphQLString },
     isAdmin: { type: GraphQLBoolean }
   })
 })
+
+
+// const TagType = new GraphQLObjectType({
+//   name: 'Tag',
+//   fields: () => ({
+//     _id: { type: GraphQLID },
+//     name: { type: GraphQLString },
+//     details: { type: GraphQLString },
+//   })
+// })
 
 
 exports.AuthUserType = new GraphQLObjectType({

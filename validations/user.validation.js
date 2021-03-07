@@ -8,6 +8,14 @@ function validateUser(user) {
     userType: Joi.string().valid("employee", "contractor").required(),
     tags: Joi.array().items(Joi.string().regex(/^[0-9a-fA-F]{24}$/)).optional(),
     password: Joi.string().min(7).required(),
+    role: Joi.when('userType', {
+      is: 'employee',
+      then: Joi.string().required()
+    }),
+    duration: Joi.when('userType', {
+      is: 'contractor',
+      then: Joi.string().required()
+    }),
   });
   return Schema.validate(user);
 }

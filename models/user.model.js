@@ -36,14 +36,14 @@ const userSchema = new Schema({
   },
   role: {
     type: String,
-    rdefault: null,
+    default: null,
   },
-  tags: {
-    type: [ObjectId],
+  tags: [{
+    type: ObjectId,
     default: null,
     index: true,
     ref: "Tag"
-  },
+  }],
   isAdmin: {
     type: Boolean,
     default: false,

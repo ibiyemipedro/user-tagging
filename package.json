@@ -4,7 +4,7 @@
   "description": "A tagging system for ",
   "main": "app.js",
   "scripts": {
-    "test": "",
+    "test": "jest --runInBand --detectOpenHandles",
     "dev": "nodemon app.js",
     "start": "node app.js"
   },
@@ -23,9 +23,12 @@
     "joi": "^17.4.0",
     "jsonwebtoken": "^8.5.1",
     "lodash": "^4.17.21",
-    "mongoose": "^5.11.18"
+    "mongoose": "^5.11.18",
+    "sinon": "^9.2.4"
   },
   "devDependencies": {
+    "jest": "^26.6.3",
+    "mongodb-memory-server": "^6.9.3",
     "nodemon": "^2.0.7"
   }
 }
