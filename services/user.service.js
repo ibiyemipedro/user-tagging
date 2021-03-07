@@ -2,6 +2,9 @@ const config = require('config');
 const bcrypt = require('bcrypt');
 const User = require('../models/user.model');
 
+const TagService = require("../services/tag.service");
+const tagInstance = new TagService();
+
 class UserService {
 
   /**
@@ -39,16 +42,16 @@ class UserService {
 * @param {String} populate - fields to populate
 * @returns {String} registeredUser
 */
-  getUser(filter = {}, option = {}, populate = "") {
+  getUsers(filter = {}, option = {}, populate = "") {
     return new Promise(async (resolve, reject) => {
       try {
 
-        const registeredUser = await User.findOne(filter)
+        const registeredUser = await User.find(filter)
           .select(option)
           .populate(populate);
 
         if (!registeredUser || registeredUser.deleted) return reject({ code: 400, msg: 'User not found' })
-        if (!registeredUser.verified) return reject({ code: 400, msg: 'User not verified' })
+        if (registeredUser.verified === false) return reject({ code: 400, msg: 'User not verified' })
         delete registeredUser.password
 
         resolve(registeredUser);
@@ -64,18 +67,27 @@ class UserService {
   /**
   * Edit a user
   * @param {Object} user - user object to be edited
-  * @param {Object} body - edit object
+  * @param {Object} userEditObject - edit object
   * @returns {Object} updatedUser
   */
-  editUser(user, body) {
+  editUser(user, userEditObject) {
+
     return new Promise(async (resolve, reject) => {
       try {
 
         let validUser = await User.findOne({ email: user.email });
         if (!validUser || validUser.deleted) return reject({ code: 404, msg: 'User not found' })
 
-        const updatedUser = await validUser.updateOne(body);
-        resolve(updatedUser);
+        if (userEditObject.tag && userEditObject.tag.length > 0) {
+          await Promise.all(userEditObject.tag.map(async (tag) => {
+            await tagInstance.getTags({ _id: tag })
+          }));
+        }
+
+        await validUser.updateOne(userEditObject);
+        const updatedUser = await this.getUsers({ email: user.email })
+
+        resolve(updatedUser[0]);
 
       } catch (error) {
         error.source = 'Edit user service'
@@ -86,14 +98,14 @@ class UserService {
 
   /**
   * Delete a user
-  * @param {Object} user - user object to be deleted
+  * @param {String} userId - user to be deleted
   * @returns {Object} updatedUser
   */
-  deleteUser(user) {
+  deleteUser(userId) {
     return new Promise(async (resolve, reject) => {
       try {
 
-        let validUser = await User.findOne({ email: user.email });
+        let validUser = await User.findById(userId);
         if (!validUser || validUser.deleted) return reject({ code: 404, msg: 'User not found or Already Deleted' })
 
         const updatedUser = await validUser.updateOne({ deleted: true, deletedAt: new Date() });
@@ -102,34 +114,6 @@ class UserService {
       } catch (error) {
         error.source = 'Delete user service'
         return reject(error);
-      }
-    })
-  }
-
-  /**
-  * Change user password
-  * @param {Object} user - user object to be edited
-  * @param {Object} body - password update object
-  * @returns {Object} updatedUser
-  */
-  changePassword(user, body) {
-    return new Promise(async (resolve, reject) => {
-      try {
-        let validUser = await User.findOne({ email: user.email });
-        if (!validUser || validUser.deleted) return reject({ code: 404, msg: 'User not found' })
-
-        const isEqual = await bcrypt.compare(body.oldPassword, validUser.password);
-        if (!isEqual) return reject({ code: 400, msg: 'Old password incorrect' })
-
-        const hashedPassword = await bcrypt.hash(body.newPassword, config.get('application.jwt.salt'));
-
-        const updatedUser = await validUser.updateOne({ password: hashedPassword });
-        resolve(updatedUser);
-
-      } catch (error) {
-        error.source = 'Change password service'
-        return reject(error);
-
       }
     })
   }

@@ -35,7 +35,7 @@ exports.editTag = async (tagUpdateObject) => {
     delete tagUpdateObject.id;
 
     const modifiedTag = await tagInstance.editTag(tagId, tagUpdateObject)
-    return modifiedTag[0];
+    return modifiedTag;
   } catch (error) {
     throw new Error(error.msg || error.message);
   }
@@ -51,7 +51,7 @@ exports.deleteTag = async (tagId) => {
     const { error } = validateTagId(tagId);
     if (error) throw new Error(error.details[0].message);
 
-    await tagInstance.deleteTag(tagId)
+    await tagInstance.deleteTag(tagId.tagId)
     return { code: 200, message: MSG_TYPES.DELETED };
 
   } catch (error) {

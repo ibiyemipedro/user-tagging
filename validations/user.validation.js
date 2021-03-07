@@ -6,10 +6,9 @@ function validateUser(user) {
     firstName: Joi.string().max(30).required(),
     lastName: Joi.string().max(30).required(),
     userType: Joi.string().valid("employee", "contractor").required(),
-    tag: Joi.string().optional(),
+    tag: Joi.array().items(Joi.string().regex(/^[0-9a-fA-F]{24}$/)).optional(),
     password: Joi.string().min(7).required(),
   });
-
   return Schema.validate(user);
 }
 
@@ -18,53 +17,29 @@ function validateLogin(user) {
     email: Joi.string().email().max(50).required(),
     password: Joi.string().min(7).required(),
   });
-
   return Schema.validate(user);
 }
 
 function validateEditProfile(user) {
   const Schema = Joi.object().keys({
-
+    firstName: Joi.string().max(30).optional(),
+    lastName: Joi.string().max(30).optional(),
+    tag: Joi.array().items(Joi.string().regex(/^[0-9a-fA-F]{24}$/)).optional(),
   });
-
   return Schema.validate(user);
 }
 
-function validateAdminVerification(verificationObject) {
+function validateUserId(tagId) {
   const Schema = Joi.object().keys({
-    email: Joi.string().email().max(50).required(),
-    verificationCode: Joi.string().min(4).max(15).required(),
+    userId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
   });
-
-  return Schema.validate(verificationObject);
+  return Schema.validate(tagId);
 }
-
-function validatePasswordUpdated(user) {
-  const Schema = Joi.object().keys({
-    oldPassword: Joi.string().min(7).required(),
-    newPassword: Joi.string().min(7).required(),
-  });
-
-  return Schema.validate(user);
-}
-
-function validateVerify(user) {
-  const Schema = Joi.object().keys({
-    type: Joi.string().valid("user", "admin").optional(),
-  });
-
-  return Schema.validate(user);
-}
-
 
 
 module.exports = {
   validateUser,
   validateLogin,
-  validateAdminVerification,
-
-
   validateEditProfile,
-  validatePasswordUpdated,
-  validateVerify
+  validateUserId
 };

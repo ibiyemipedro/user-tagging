@@ -15,7 +15,6 @@ function validateTagId(tagId) {
   const Schema = Joi.object().keys({
     tagId: Joi.string().regex(/^[0-9a-fA-F]{24}$/).required(),
   });
-
   return Schema.validate(tagId);
 }
 

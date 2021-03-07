@@ -42,7 +42,7 @@ class TagService {
 
         await validTag.updateOne(tagUpdate)
         const updatedTag = await this.getTags({ _id: tagId })
-        resolve(updatedTag);
+        resolve(updatedTag[0]);
 
       } catch (error) {
         error.source = 'Edit tag Service'
@@ -70,7 +70,6 @@ class TagService {
       }
     })
   }
-
 
 
   /**

@@ -35,8 +35,7 @@ exports.editTag = {
 exports.deleteTag = {
   type: ResponseType,
   args: {
-    name: { type: GraphQLString },
-    details: { type: GraphQLString }
+    tagId: { type: GraphQLID },
   },
   resolve(parent, args, { user, authErrorMsg }) {
     if (user == null) throw new Error(authErrorMsg)

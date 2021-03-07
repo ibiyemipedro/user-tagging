@@ -1,34 +1,41 @@
+const { validateEditProfile, validateUserId } = require("../validations/user.validation");
+const { MSG_TYPES } = require("../constants/msgTypes");
 const UserService = require("../services/user.service");
 const userInstance = new UserService();
-const { appLogger } = require('../middlewares/logger');
 
-exports.getUser = async (req, res, next) => {
+exports.getUser = async () => {
   try {
-    JsonResponse(res, 200, 'Get profile success', req.user)
+
+    const user = await userInstance.getUser()
+    return user;
+
   } catch (error) {
     next(error)
   }
 }
 
-exports.editUser = async (req, res, next) => {
+exports.editUser = async (user, editUserObject) => {
   try {
-    await userInstance.editProfile(req.body, req.user)
+    const { error } = validateEditProfile(editUserObject);
+    if (error) throw new Error(error.details[0].message);
 
-    JsonResponse(res, 200, 'Edit profile success')
+    const updatedUser = await userInstance.editUser(user, editUserObject)
+    return updatedUser;
+
   } catch (error) {
-    next(error)
+    throw new Error(error.msg || error.message);
   }
 }
 
-exports.changePassword = async (req, res, next) => {
+exports.deleteUser = async (userId) => {
   try {
-    // const { error } = validatePasswordUpdated(req.body);
-    // if (error) return JsonResponse(res, 400, error.details[0].message)
+    const { error } = validateUserId(userId);
+    if (error) throw new Error(error.details[0].message);
 
-    await userInstance.changePassword(req.body, req.user)
+    await userInstance.deleteUser(userId.userId)
+    return { code: 200, message: MSG_TYPES.DELETED };
 
-    JsonResponse(res, 200, 'Change password success')
   } catch (error) {
-    next(error)
+    throw new Error(error.msg || error.message);
   }
 }

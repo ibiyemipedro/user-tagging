@@ -124,9 +124,9 @@ class AuthService {
           verified: true
         })
 
-        const updatedAdmin = await userInstance.getUser({ email: body.email })
+        const updatedAdmin = await userInstance.getUsers({ email: body.email })
 
-        resolve(updatedAdmin);
+        resolve(updatedAdmin[0]);
 
       } catch (error) {
         error.source = 'verify admin service'
