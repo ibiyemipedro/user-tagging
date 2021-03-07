@@ -10,7 +10,7 @@ exports.editUser = {
   args: {
     firstName: { type: GraphQLString },
     lastName: { type: GraphQLString },
-    tag: { type: GraphQLList(GraphQLString) },
+    tags: { type: GraphQLList(GraphQLString) },
   },
   resolve(parent, args, { user, authErrorMsg }) {
     if (user == null) throw new Error(authErrorMsg)

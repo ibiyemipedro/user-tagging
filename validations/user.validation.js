@@ -6,7 +6,7 @@ function validateUser(user) {
     firstName: Joi.string().max(30).required(),
     lastName: Joi.string().max(30).required(),
     userType: Joi.string().valid("employee", "contractor").required(),
-    tag: Joi.array().items(Joi.string().regex(/^[0-9a-fA-F]{24}$/)).optional(),
+    tags: Joi.array().items(Joi.string().regex(/^[0-9a-fA-F]{24}$/)).optional(),
     password: Joi.string().min(7).required(),
   });
   return Schema.validate(user);
@@ -24,7 +24,7 @@ function validateEditProfile(user) {
   const Schema = Joi.object().keys({
     firstName: Joi.string().max(30).optional(),
     lastName: Joi.string().max(30).optional(),
-    tag: Joi.array().items(Joi.string().regex(/^[0-9a-fA-F]{24}$/)).optional(),
+    tags: Joi.array().items(Joi.string().regex(/^[0-9a-fA-F]{24}$/)).optional(),
   });
   return Schema.validate(user);
 }

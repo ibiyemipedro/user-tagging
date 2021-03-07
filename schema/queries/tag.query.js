@@ -3,19 +3,21 @@ const { GraphQLID, GraphQLList } = graphql
 
 const { TagType } = require("../types/tag.type")
 
+const { getTag, getTags } = require('../../controllers/tag.controller');
+
 exports.tag = {
   type: TagType,
   args: {
-    id: { type: GraphQLID }
+    tagId: { type: GraphQLID }
   },
   resolve(parent, args) {
-    return _.find(tags, { id: args.id });
+    return getTag(args);
   }
 }
 
 exports.tags = {
   type: GraphQLList(TagType),
   resolve(parent, args) {
-    return tags;
+    return getTags();
   }
 }

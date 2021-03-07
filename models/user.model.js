@@ -30,6 +30,14 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
+  duration: {
+    type: String,
+    default: null,
+  },
+  role: {
+    type: String,
+    rdefault: null,
+  },
   tags: {
     type: [ObjectId],
     default: null,

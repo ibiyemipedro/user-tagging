@@ -1,6 +1,8 @@
 const graphql = require('graphql');
 const { GraphQLObjectType, GraphQLString, GraphQLID, GraphQLList } = graphql
 
+const { getTagUsers } = require('../../controllers/user.controller');
+
 
 const { UserType } = require("./user.type")
 
@@ -12,7 +14,7 @@ exports.TagType = new GraphQLObjectType({
     details: { type: GraphQLString },
     users: {
       type: GraphQLList(UserType), resolve(parent, args) {
-
+        return getTagUsers(parent._id);
       }
     }
   })

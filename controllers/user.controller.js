@@ -3,14 +3,38 @@ const { MSG_TYPES } = require("../constants/msgTypes");
 const UserService = require("../services/user.service");
 const userInstance = new UserService();
 
-exports.getUser = async () => {
+exports.getUser = async (userId) => {
   try {
+    const { error } = validateUserId(userId);
+    if (error) throw new Error(error.details[0].message);
 
-    const user = await userInstance.getUser()
-    return user;
+    const user = await userInstance.getUsers({ _id: userId.userId, verified: true, deleted: false })
+    return user[0];
 
   } catch (error) {
-    next(error)
+    throw new Error(error.msg || error.message);
+  }
+}
+
+exports.getUsers = async () => {
+  try {
+    const users = await userInstance.getUsers({ verified: true, deleted: false })
+
+    console.log('users', users)
+    return users;
+
+  } catch (error) {
+    throw new Error(error.msg || error.message);
+  }
+}
+
+exports.getTagUsers = async (tagId) => {
+  try {
+    const users = await userInstance.getTagUsers(tagId)
+    return users;
+
+  } catch (error) {
+    throw new Error(error.msg || error.message);
   }
 }
 

@@ -9,9 +9,11 @@ const { tag, tags } = require("./queries/tag.query")
 exports.query = new GraphQLObjectType({
   name: 'RootQueryType',
   fields: {
+    // User
     user,
-    tag,
     users,
+    // Tag
+    tag,
     tags
   }
 })
