@@ -5,6 +5,7 @@ const { TagType } = require("./tag.type");
 const UserType = new GraphQLObjectType({
   name: 'Users',
   fields: () => ({
+    _id: { type: GraphQLID },
     firstName: { type: GraphQLString },
     lastName: { type: GraphQLString },
     email: { type: GraphQLString },
@@ -16,16 +17,6 @@ const UserType = new GraphQLObjectType({
     isAdmin: { type: GraphQLBoolean }
   })
 })
-
-
-// const TagType = new GraphQLObjectType({
-//   name: 'Tag',
-//   fields: () => ({
-//     _id: { type: GraphQLID },
-//     name: { type: GraphQLString },
-//     details: { type: GraphQLString },
-//   })
-// })
 
 
 exports.AuthUserType = new GraphQLObjectType({

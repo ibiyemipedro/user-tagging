@@ -54,7 +54,7 @@ class UserService {
         }
 
         await validUser.updateOne(userEditObject);
-        const updatedUser = await this.getUsers({ email: user.email })
+        const updatedUser = await this.getUsers({ email: user.email }, {}, "tags")
 
         resolve(updatedUser[0]);
 

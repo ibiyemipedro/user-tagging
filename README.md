@@ -1,16 +1,36 @@
 # User Tagging
 
-GraphQL API Server using Node and GraphQL that helps us managing our teams
+GraphQL API Server using Node and GraphQL that helps in managing teams
 
 _Author:_ Ibiyemi Sanni
 
 ## Features and Requirements
 
-A member has a firstName, lastName enail and a type (that can an employee or a contractor) - if it's a contractor, the duration of the contract needs to be saved, and if it's an employee we need to store their role, for instance: Software Engineer, Project Manager and so on. A member can be tagged, for instance: C#, Angular, General Frontend, Seasoned Leader and so on. (Tags will likely be used as filters later, so keep that in mind)
+A member has a firstName, lastName enail and a type (that can an employee or a contractor) - if it's a contractor, the duration of the contract needs to be saved, and if it's an employee their role is stored, for instance: Software Engineer, Project Manager and so on. A member can be tagged, for instance: C#, Angular, General Frontend, Seasoned Leader and so on. (Tags will likely be used as filters later, so keep that in mind)
+
+The application is further extended to allow have admin users and regular users. And admin users can only be employees not contractors.
+
+### Features overview
 
 - CREATE - READ - UPDATE - DELETE for Users
-- CREATE - READ - UPDATE - DELETE for Admin
+- CREATE - READ - UPDATE - DELETE for Admin User
 - CREATE - READ - UPDATE - DELETE for Tags
+
+### Other unique features of the application
+
+- Only admin users can create, edit and delete tags.
+
+- Admin users need to be verified to be active. verification code(CODELITT)
+
+- Users can fetch all tags and select from the tags during sign up or when editing user accounts
+
+- Tags are hard-deleted - They are removed from the database permanently
+
+- Users are soft-deleted - They are only marked with a deleted flag but not permanently removed from the database
+
+- For authenticated queries/mutations, pass an extra hearder 'x-auth-token', with a value of the token gotten on on sign in
+
+- Admin users can delete other users account
 
 ## Technologies
 
@@ -22,7 +42,7 @@ A member has a firstName, lastName enail and a type (that can an employee or a c
 
 ## Requirements
 
-- NodeJS
+- NodeJS (minimum v14.0.0)
 
 ## Installation
 
@@ -38,20 +58,20 @@ node -v
 
 The code base is structured in a modular way, following a Model - Controller - Service Architecture. An overview of the code base:
 
-- CONFIG - containing config data and files
-- CONTROLLER - contains the files that receives data from the routes and call the services
-- SCHEMA - containing data for seeding
+- CONFIG - containing configuration data for the application
+- CONTROLLER - contains the files that receives data from the graphql and call the services
+- CONSTANTS - contains data that are expected to br constant across the application.
+- MIDDLEWARES - collection of middlewares written for the application.
+- MODEL - contains the models for the database
+- SCHEMA - containing the queries, types and mutations for graphql server
 - SERVICES - containing services files that handles requests functionalities
 - TESTS - containing test files
-- UTILS - containing classes, middlewares and other utilities
+- UTILS - containing utility functions used in the application ( error handling, logging )
+- VALIDATIONS - contains validation rules for the requests.
 
 ## Set - Up
 
-Clone the source file from github the github repo [https://github.com/yemipedro07/luckyGame.](https://github.com/yemipedro07/luckyGame) or unzip the source file to your project folder
-
-For Production, the details are set in the .env file .
-
-### NOTE: For actual production environment save your dbdetails to somewhere safe and not the .env in your root folder.
+Clone the project from the github repository [https://github.com/ibiyemipedro/user-tagging.](https://github.com/ibiyemipedro/user-tagging)
 
 ### Install Dependencies
 
@@ -74,26 +94,37 @@ Run the following command
 npm run start
 ```
 
-If everything runs fine, navigate to your browser and open http://localhost:6000. The project will be running on the endpoint.
+### Tests
 
-## EndPoints
+Installing the dependences will install `jest`, `jest-extented` and `mongodb-memory-server`. Theses are the packages needed for the test.
 
-### Register a User -
+In the terminal of your root project, Run the following command
 
-_Endpoint_ ` http://localhost:3800/register` - method (POST)
+```bash
+npm run test
+```
 
-- Creates a user
+## END-POINT
+
+If everything runs fine, navigate to your browser and open http://localhost:5000. The project will be running on the endpoint.
+
+_GraphQL Endpoint :_ ` http://localhost:5000/graphql`
+
+## QUERIES
+
+### tags -
+
+- Gets all the tags in the database
 
 _Payload_
 
-#### application/json
-
 ```bash
 {
-	"name" : "Demo User",
-	"password" : "12345678",
-	"email" : "a@a.com",
-	"age": 17
+  tags{
+    _id
+    name
+    details
+  }
 }
 ```
 
@@ -101,26 +132,31 @@ _Response format_
 
 ```bash
 {
-    "status": true,
-    "message": "User registration successful",
-    "data": null
+  "data": {
+    "tags": [
+      {
+        "_id": "6045c93db0f82343431e4332",
+        "name": "JS",
+        "details": "Tag for javascript developers"
+      }
+    ]
+  }
 }
 ```
 
-### User Login -
+### tag -
 
-_Endpoint_ ` http://localhost:3800/login` - method (POST)
-
-- Login to play game
+- Get details of a single tag
 
 _Payload_
 
-#### application/json
-
 ```bash
 {
-	"email" : "a@a.com",
-	"password" : "12345678"
+  tag(tagId: "6045c93db0f82343431e4332"){
+    _id
+    name
+    details
+  }
 }
 ```
 
@@ -128,19 +164,394 @@ _Response format_
 
 ```bash
 {
-    "status": true,
-    "message": "User login successful",
+  "data": {
+    "tag": {
+      "_id": "6045c93db0f82343431e4332",
+      "name": "JS",
+      "details": "Tag for javascript developers"
+    }
+  }
+}
+```
+
+### users -
+
+- Gets all the users in the database
+
+_Header :_ `x-auth-toke : {token}`
+
+_Payload_
+
+```bash
+{
+  users{
+    firstName
+    lastName
+    email
+    role
+    duration
+    userType
+    tags{
+      name
+    }
+  }
+}
+```
+
+_Response format_
+
+```bash
+{
     "data": {
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFAYS5jb20iLCJpYXQiOjE2MDM1NjcyMDcsImV4cCI6MTYwMzY1MzYwN30.b4KOKwXFNm57CdhY4gcSkxxElhjmaRhVfaIol-KcNl8",
+        "users": [
+            {
+                "firstName": "Demo",
+                "lastName": "User",
+                "email": "b@b.com",
+                "role": "Software Dev",
+                "duration": null,
+                "userType": "employee",
+                "tags": []
+            },
+            {
+                "firstName": "Demo",
+                "lastName": "Admin",
+                "email": "a@a.com",
+                "role": "Software Dev",
+                "duration": null,
+                "userType": "employee",
+                "tags": []
+            }
+        ]
+    }
+}
+```
+
+### user -
+
+- Get details of a single user
+
+_Payload_
+
+```bash
+{
+  user{
+    firstName
+    lastName
+    email
+    role
+    duration
+    userType
+    tags{
+      name
+    }
+  }
+}
+```
+
+_Response format_
+
+```bash
+{
+    "data": {
         "user": {
-            "id": 1,
-            "name": "Demo User",
+            "firstName": "Demo",
+            "lastName": "Admin",
             "email": "a@a.com",
-            "password": "$2b$12$fccxgHrB3Ux1pxW9KzmDQ.Q9JLYkJ8QiKz3ys81PjMQ1Uf5zeHZFC",
-            "age": 17,
-            "createdAt": "2020-10-23T18:36:16.509Z",
-            "updatedAt": "2020-10-23T18:36:16.509Z"
+            "role": "Software Dev",
+            "duration": null,
+            "userType": "employee",
+            "tags": []
         }
     }
 }
 ```
+
+## MUTATIONS
+
+### signUp -
+
+- creates a user account
+
+_Payload_
+
+```bash
+mutation{
+  signUp( firstName : "Demo" lastName : "User" role: "Software Dev" email: "b@b.com" userType: "employee" password: "1234567"){
+    firstName
+    lastName
+    email
+    role
+    duration
+    userType
+    tags{
+      name
+    }
+  }
+}
+
+```
+
+_Response format_
+
+```bash
+{
+  "data": {
+    "signUp": {
+      "firstName": "Demo",
+      "lastName": "User",
+      "email": "b@b.com",
+      "role": "Software Dev",
+      "duration": null,
+      "userType": "employee",
+      "tags": []
+    }
+  }
+}
+```
+
+### adminSignUp -
+
+- Creates a user with admin access
+
+_Payload_
+
+```bash
+mutation{
+  adminSignUp( firstName : "Demo" lastName : "Admin" role: "Software Dev" email: "a@a.com" userType: "employee" password: "1234567"){
+    firstName
+    lastName
+    email
+    role
+    duration
+    userType
+    tags{
+      name
+    }
+  }
+}
+```
+
+_Response format_
+
+```bash
+{
+  "data": {
+    "adminSignUp": {
+      "firstName": "Demo",
+      "lastName": "Admin",
+      "email": "a@a.com",
+      "role": "Software Dev",
+      "duration": null,
+      "tags": []
+    }
+  }
+}
+```
+
+### verifyAdmin -
+
+- Verifies an admin account
+
+_Payload_
+
+```bash
+mutation{
+  verifyAdmin(email: "a@a.com" verificationCode: "CODELITT"){
+    firstName
+    lastName
+    email
+    role
+    duration
+    userType
+    tags{
+      name
+    }
+  }
+}
+```
+
+_Response format_
+
+```bash
+{
+  "data": {
+    "verifyAdmin": {
+      "firstName": "Demo",
+      "lastName": "Admin",
+      "email": "a@a.com",
+      "role": "Software Dev",
+      "duration": null,
+      "userType": "employee",
+      "tags": []
+    }
+  }
+}
+
+```
+
+### addTag -
+
+- adds a tag to the db
+
+_Payload_
+
+```bash
+mutation{
+  addTag(name: "JS" details: "Tag for tavascript developers"){
+    name
+    details
+  }
+}
+```
+
+_Response format_
+
+```bash
+{
+    "data": {
+        "addTag": {
+            "name": "JS",
+            "details": "Tag for tavascript developers"
+        }
+    }
+}
+```
+
+### editTag -
+
+- Edit tag information
+
+_Payload_
+
+```bash
+mutation{
+  editTag(id: "6045c93db0f82343431e4332" name: "JS" details: "Tag for javascript developers"){
+    name
+    details
+  }
+}
+```
+
+_Response format_
+
+```bash
+{
+    "data": {
+        "editTag": {
+            "name": "JS",
+            "details": "Tag for javascript developers"
+        }
+    }
+}
+```
+
+### deleteTag -
+
+- Removes a tag from the database
+
+_Payload_
+
+```bash
+mutation{
+  deleteTag(tagId: "6045cb783212fb44caf3f21f"){
+    code
+    message
+  }
+}
+```
+
+_Response format_
+
+```bash
+{
+    "data": {
+        "deleteTag": {
+            "code": 200,
+            "message": "Resource Deleted Successfully"
+        }
+    }
+}
+```
+
+### editUser -
+
+- Gets all the tags in the database
+
+_Payload_
+
+```bash
+mutation{
+  editUser(firstName: "Philli" lastName:"Layden" tags: ["6045c93db0f82343431e4332"]){
+    firstName
+    lastName
+    email
+    role
+    duration
+    userType
+    tags{
+      name
+    }
+  }
+}
+```
+
+_Response format_
+
+```bash
+{
+    "data": {
+        "editUser": {
+            "firstName": "Philli",
+            "lastName": "Layden",
+            "email": "a@a.com",
+            "role": "Software Dev",
+            "duration": null,
+            "userType": "employee",
+            "tags": [
+                {
+                    "name": "JS"
+                }
+            ]
+        }
+    }
+}
+```
+
+### deleteUser -
+
+- Gets all the tags in the database
+
+_Payload_
+
+```bash
+mutation{
+  deleteUser(userId:"6045cd7810ba6e453bdfcf98"){
+    code
+    message
+  }
+}
+```
+
+_Response format_
+
+```bash
+{
+    "data": {
+        "deleteUser": {
+            "code": 200,
+            "message": "Resource Deleted Successfully"
+        }
+    }
+}
+```
+
+## IMPROVEMENTS
+
+For improvements to the to make the application better
+
+- More test cases are needed to cover success and failure cases
+- Custom error handler function for graphql for improved error handling
+- additional response types to better structure graphql responses with status and message alongside the data
+
+### -------------------------------Side note--------------------------------------------------

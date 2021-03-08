@@ -30,15 +30,8 @@ app.use('/graphql', graphqlHTTP((req, res) => ({
   context: {
     user: req.user,
     authErrorMsg: req.authErrorMsg
-  },
-  //   formatError: error => ({
-  //     message: error.message,
-  //     locations: error.locations,
-  //     stack: error.stack,
-  //     path: error.path
-  // })
+  }
 })
-
 ));
 
 

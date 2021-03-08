@@ -29,6 +29,8 @@ exports.adminSignUp = {
     password: { type: GraphQLString },
     tag: { type: GraphQLString },
     userType: { type: GraphQLString },
+    role: { type: GraphQLString },
+    duration: { type: GraphQLString },
   },
   resolve(parent, args) {
     return adminSignUp(args)

@@ -1,4 +1,4 @@
-const { validateUser, validateLogin, validateVerify, validateAdminVerification } = require("../validations/user.validation");
+const { validateUser, validateLogin, validateAdminVerification } = require("../validations/user.validation");
 const AuthService = require("../services/auth.service");
 const authInstance = new AuthService();
 

@@ -44,10 +44,21 @@ function validateUserId(tagId) {
   return Schema.validate(tagId);
 }
 
+function validateAdminVerification(verificationObject) {
+
+  const Schema = Joi.object().keys({
+    email: Joi.string().email().max(50).required(),
+    verificationCode: Joi.string().min(5).max(10).required(),
+  });
+  return Schema.validate(verificationObject);
+
+}
+
 
 module.exports = {
   validateUser,
   validateLogin,
   validateEditProfile,
-  validateUserId
+  validateUserId,
+  validateAdminVerification
 };

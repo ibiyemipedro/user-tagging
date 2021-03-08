@@ -38,7 +38,7 @@ class TagService {
     return new Promise(async (resolve, reject) => {
       try {
         let validTag = await Tag.findById(tagId);
-        if (!validTag) return reject({ code: 404, msg: 'Tags not found' })
+        if (!validTag) return reject({ code: 404, msg: 'Tag not found' })
 
         await validTag.updateOne(tagUpdate)
         const updatedTag = await this.getTags({ _id: tagId })
@@ -82,7 +82,7 @@ class TagService {
       try {
 
         const activeTag = await Tag.findById(tagId);
-        if (!activeTag) return reject({ code: 404, msg: 'Tags not found or already deleted' })
+        if (!activeTag) return reject({ code: 404, msg: 'Tag not found or already deleted' })
 
         const deletedTag = await activeTag.delete();
 
